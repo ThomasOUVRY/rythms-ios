@@ -5,6 +5,7 @@ import WidgetKit
 struct RhythmsWidgetBundle: WidgetBundle {
     var body: some Widget {
         FocusRhythmWidget()
+        HabitRingsWidget()
         OverviewWidget()
         RhythmLiveActivityWidget()
     }

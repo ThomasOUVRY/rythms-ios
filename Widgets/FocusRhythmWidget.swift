@@ -2,7 +2,8 @@ import AppIntents
 import SwiftUI
 import WidgetKit
 
-/// The most urgent rhythm: Home Screen small widget plus the three Lock Screen sizes.
+/// The most urgent rhythm: Home Screen small widget with its button, plus the wide and inline Lock Screen spots.
+/// The round Lock Screen spot is `HabitRingsWidget`, which follows habits you choose.
 struct FocusRhythmWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "FocusRhythm", provider: RhythmProvider()) { entry in
@@ -11,7 +12,7 @@ struct FocusRhythmWidget: Widget {
         }
         .configurationDisplayName("Next up")
         .description("The rhythm that needs you soonest, with its button.")
-        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies([.systemSmall, .accessoryRectangular, .accessoryInline])
     }
 }
 
@@ -23,7 +24,6 @@ struct FocusRhythmView: View {
         if let rhythm = entry.mostUrgent {
             let display = CardDisplay(rhythm, now: entry.date)
             switch family {
-            case .accessoryCircular: circular(rhythm, display)
             case .accessoryRectangular: rectangular(rhythm, display)
             case .accessoryInline: Label(display.inline, systemImage: rhythm.symbol)
             default: small(rhythm, display)
@@ -65,21 +65,6 @@ struct FocusRhythmView: View {
                 .padding(.top, 8)
             }
         }
-    }
-
-    private func circular(_ r: RhythmSnapshot, _ d: CardDisplay) -> some View {
-        Gauge(value: d.fill) {
-            Image(systemName: r.symbol)
-        } currentValueLabel: {
-            if d.isDone {
-                Image(systemName: "checkmark")
-            } else {
-                Image(systemName: r.symbol)
-            }
-        }
-        .gaugeStyle(.accessoryCircularCapacity)
-        .widgetAccentable()
-        .accessibilityLabel(d.isDone ? "\(r.name), done" : "\(r.name), \(d.value) \(d.valueLabel)")
     }
 
     private func rectangular(_ r: RhythmSnapshot, _ d: CardDisplay) -> some View {

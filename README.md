@@ -62,13 +62,24 @@ Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 4. Drag the IPA into Sideloadly, enter your Apple ID, click **Start**.
 5. On the iPhone: turn on Settings → Privacy & Security → **Developer Mode** (restart), then Settings → General → VPN & Device Management → trust your Apple ID.
 
-With a free Apple ID the app must be re-signed every 7 days (Sideloadly can auto-refresh over Wi-Fi while the PC is on). Free signing doesn't grant App Groups or Time Sensitive notifications, so widgets may show "Add a countdown in the app" and follow-ups arrive as normal notifications; the app itself works.
+With a free Apple ID the app must be re-signed every 7 days (Sideloadly can auto-refresh over Wi-Fi while the PC is on). Free signing may not grant App Groups, in which case widgets show "Add a countdown in the app"; the app itself works.
+
+## Widgets
+
+| Widget | Sizes | Shows |
+|---|---|---|
+| Next up | Home small, Lock Screen wide, Lock Screen inline | The rhythm that needs you soonest, with its button on the Home Screen |
+| Habit rings | Home small, Lock Screen round | Rings for the habits you pick: up to 4 on the Home Screen, 1 on the Lock Screen (Touch and hold → Edit Widget → Habits). Empty choice = the ones that need you soonest |
+| All rhythms | Home medium | Your first three rhythms side by side |
+| Live countdown | Lock Screen | While a rhythm set to "Live countdown" is due, with its button |
+
+Widgets read your rhythms through the App Group. If they show "Add a countdown in the app" while you have rhythms, the App Group isn't active in your signed build.
 
 ## How reminders work
 
 Each rhythm has its own reminder settings:
 
-- **Nudge style**: one quiet nudge, or a nudge plus one time-sensitive follow-up an hour later (then it stops), or a live Lock Screen countdown while it's due.
+- **Nudge style**: one quiet nudge, or a nudge plus one follow-up an hour later (then it stops), or a live Lock Screen countdown while it's due.
 - **Moment**: when the window opens, a set time, or a routine moment (wake up, after dinner, before bed, when I get home).
 - **Checkpoints** for periods: small steps like "Day 1: pick an idea", "Day 8: anything to buy?".
 
@@ -79,5 +90,5 @@ Every notification has the rhythm's own button ("Brushed") plus snoozes ("In 20 
 - iOS has no background timer, so reminders are planned ahead and re-planned whenever the app opens, a widget button is tapped, or a notification button is used. A since-last rhythm gets its nudge and follow-up, then waits for you.
 - "When I get home" needs location permission. It's armed only while a rhythm is due, at the moment the plan is refreshed.
 - iOS only lets the app *start* a Live Activity while it's open, so the Lock Screen countdown appears after the app has been opened during the due stretch.
-- The time-sensitive follow-up needs the Time Sensitive Notifications capability on your Apple developer account. Without it, the follow-up arrives as a normal notification.
+- The app doesn't use Time Sensitive notifications (a paid-account entitlement), so a Focus mode or Scheduled Summary can hold nudges back. Allow Rhythms in each Focus (Settings → Focus → Apps) and leave it out of Scheduled Summary; the app's Settings screen shows these steps.
 - App icon artwork isn't included yet (`App/Resources/Assets.xcassets/AppIcon.appiconset`).
