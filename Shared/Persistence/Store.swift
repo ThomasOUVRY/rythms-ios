@@ -3,7 +3,7 @@ import SwiftData
 
 enum AppGroup {
     /// Set from the `APP_GROUP` build setting through Info.plist, so app and widgets agree.
-    static let id: String = Bundle.main.object(forInfoDictionaryKey: "RhythmsAppGroup") as? String ?? "group.com.example.rhythms"
+    static let id: String = Bundle.main.object(forInfoDictionaryKey: "RhythmsAppGroup") as? String ?? "group.com.thomasouvry.rhythms"
 
     static var defaults: UserDefaults { UserDefaults(suiteName: id) ?? .standard }
 }

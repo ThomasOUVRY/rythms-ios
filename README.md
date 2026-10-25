@@ -52,6 +52,18 @@ The App Group is how the widgets see your rhythms. Without it the app still runs
 
 Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) on a GitHub macOS runner: it generates the project, builds the app and widgets for the iOS Simulator (no signing needed) and runs the tests. Results and the full build log are attached to each run.
 
+### Installing on an iPhone from Windows (free)
+
+[`.github/workflows/ipa.yml`](.github/workflows/ipa.yml) builds an **unsigned IPA** on every push to `main` (or from Actions → "Build unsigned IPA" → Run workflow).
+
+1. On GitHub, open Actions → the latest "Build unsigned IPA" run → download **Rhythms-unsigned-ipa** at the bottom, and unzip it to get `Rhythms-unsigned.ipa`.
+2. Install **iTunes** and **iCloud** from apple.com (not the Microsoft Store versions), then **Sideloadly** from sideloadly.io.
+3. Plug in the iPhone, unlock it and tap **Trust**.
+4. Drag the IPA into Sideloadly, enter your Apple ID, click **Start**.
+5. On the iPhone: turn on Settings → Privacy & Security → **Developer Mode** (restart), then Settings → General → VPN & Device Management → trust your Apple ID.
+
+With a free Apple ID the app must be re-signed every 7 days (Sideloadly can auto-refresh over Wi-Fi while the PC is on). Free signing doesn't grant App Groups or Time Sensitive notifications, so widgets may show "Add a countdown in the app" and follow-ups arrive as normal notifications; the app itself works.
+
 ## How reminders work
 
 Each rhythm has its own reminder settings:

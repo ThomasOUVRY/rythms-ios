@@ -13,8 +13,8 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
-    BUNDLE_ID_PREFIX: com.example.rhythms
-    APP_GROUP: group.com.example.rhythms
+    BUNDLE_ID_PREFIX: com.thomasouvry.rhythms
+    APP_GROUP: group.com.thomasouvry.rhythms
     TARGETED_DEVICE_FAMILY: "1"
 
 targets:

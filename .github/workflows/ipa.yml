@@ -1,0 +1,72 @@
+name: Build unsigned IPA
+
+# Produces Rhythms-unsigned.ipa for sideloading (e.g. with Sideloadly on Windows),
+# which signs it with your own Apple ID. Run it from the Actions tab, or push to main.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ipa:
+    name: Build unsigned IPA
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      # A device build with signing switched off; the sideloading tool signs it later.
+      - name: Build for iPhone (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Rhythms.xcodeproj \
+            -scheme Rhythms \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            | tee xcodebuild.log | grep -E "error:|\*\* BUILD" || true
+          grep -q "\*\* BUILD SUCCEEDED \*\*" xcodebuild.log
+
+      - name: Package IPA
+        run: |
+          APP=build/Build/Products/Release-iphoneos/Rhythms.app
+          test -d "$APP"
+          echo "Bundle contents:"
+          ls "$APP/PlugIns" || echo "(no widget extension found)"
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry Rhythms-unsigned.ipa Payload
+          ls -lh Rhythms-unsigned.ipa
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rhythms-unsigned-ipa
+          path: Rhythms-unsigned.ipa
+          retention-days: 30
+
+      - name: Upload build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa-build-log
+          path: xcodebuild.log
+          retention-days: 7
