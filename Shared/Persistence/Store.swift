@@ -12,18 +12,19 @@ enum Store {
     /// One container shared by the app, the widgets and app intents, kept in the App Group.
     static let container: ModelContainer = {
         let schema = Schema([Rhythm.self])
+        // SwiftData's `groupContainer:` option crashes (rather than throws) when the App Group
+        // entitlement is missing, e.g. in unsigned CI simulator builds. Resolve the folder ourselves
+        // and fall back to the app's own storage, where widgets won't see the data.
+        let configuration: ModelConfiguration
+        if let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: AppGroup.id) {
+            configuration = ModelConfiguration(schema: schema, url: groupURL.appendingPathComponent("Rhythms.store"))
+        } else {
+            configuration = ModelConfiguration(schema: schema)
+        }
         do {
-            let shared = ModelConfiguration(schema: schema, groupContainer: .identifier(AppGroup.id))
-            return try ModelContainer(for: schema, configurations: shared)
+            return try ModelContainer(for: schema, configurations: configuration)
         } catch {
-            // No App Group (e.g. unsigned simulator build): fall back to the app's own storage.
-            // Widgets won't see data in this mode.
-            let local = ModelConfiguration(schema: schema)
-            do {
-                return try ModelContainer(for: schema, configurations: local)
-            } catch {
-                fatalError("Could not open the Rhythms store: \(error)")
-            }
+            fatalError("Could not open the Rhythms store: \(error)")
         }
     }()
 
