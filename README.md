@@ -91,4 +91,3 @@ Every notification has the rhythm's own button ("Brushed") plus snoozes ("In 20 
 - "When I get home" needs location permission. It's armed only while a rhythm is due, at the moment the plan is refreshed.
 - iOS only lets the app *start* a Live Activity while it's open, so the Lock Screen countdown appears after the app has been opened during the due stretch.
 - The app doesn't use Time Sensitive notifications (a paid-account entitlement), so a Focus mode or Scheduled Summary can hold nudges back. Allow Rhythms in each Focus (Settings → Focus → Apps) and leave it out of Scheduled Summary; the app's Settings screen shows these steps.
-- App icon artwork isn't included yet (`App/Resources/Assets.xcassets/AppIcon.appiconset`).
