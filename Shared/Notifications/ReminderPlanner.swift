@@ -12,7 +12,8 @@ struct PlannedNudge: Equatable, Sendable {
     var title: String
     var body: String
     var kind: Kind
-    var timeSensitive: Bool
+    /// Follow-ups and snoozes: ranked above other notifications.
+    var emphasized: Bool
 }
 
 /// Works out which nudges a rhythm should get from now on. Re-run whenever anything changes.
@@ -54,7 +55,7 @@ enum ReminderPlanner {
         ]
         if r.nudgeStyle != .quiet {
             let follow = nudgeDate.addingTimeInterval(3600)
-            out.append(make(r, .followUp, follow, NudgeCopy.sinceLastFollowUp(r, seed: seed, vary: settings.varyWording), timeSensitive: true))
+            out.append(make(r, .followUp, follow, NudgeCopy.sinceLastFollowUp(r, seed: seed, vary: settings.varyWording), emphasized: true))
         }
         return out
     }
@@ -93,7 +94,7 @@ enum ReminderPlanner {
                 }
                 if r.nudgeStyle != .quiet, let last = lastNudge {
                     let follow = last.addingTimeInterval(3600)
-                    out.append(make(r, .followUp, follow, NudgeCopy.periodFollowUp(r, seed: seed(for: follow), vary: settings.varyWording), timeSensitive: true, index: index))
+                    out.append(make(r, .followUp, follow, NudgeCopy.periodFollowUp(r, seed: seed(for: follow), vary: settings.varyWording), emphasized: true, index: index))
                 }
             }
 
@@ -156,7 +157,7 @@ enum ReminderPlanner {
         _ kind: PlannedNudge.Kind,
         _ date: Date,
         _ copy: (title: String, body: String),
-        timeSensitive: Bool = false,
+        emphasized: Bool = false,
         index: Int? = nil
     ) -> PlannedNudge {
         let stamp = Int(date.timeIntervalSince1970)
@@ -168,7 +169,7 @@ enum ReminderPlanner {
             title: copy.title,
             body: copy.body,
             kind: kind,
-            timeSensitive: timeSensitive
+            emphasized: emphasized
         )
     }
 }

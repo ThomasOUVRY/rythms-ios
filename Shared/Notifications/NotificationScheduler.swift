@@ -44,7 +44,7 @@ final class NotificationScheduler {
     }
 
     func snooze(_ r: RhythmSnapshot, minutes: Int) async {
-        let content = self.content(r.id, NudgeCopy.snooze(r), timeSensitive: true)
+        let content = self.content(r.id, NudgeCopy.snooze(r), emphasized: true)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(minutes * 60), repeats: false)
         try? await center.add(UNNotificationRequest(identifier: NotificationIDs.snooze(r.id), content: content, trigger: trigger))
     }
@@ -80,7 +80,7 @@ final class NotificationScheduler {
         return UNNotificationCategory(identifier: NotificationIDs.category(r.id), actions: [log, soon, later], intentIdentifiers: [], options: [])
     }
 
-    private func content(_ rhythmID: UUID, _ copy: NudgeCopy.Copy, timeSensitive: Bool) -> UNMutableNotificationContent {
+    private func content(_ rhythmID: UUID, _ copy: NudgeCopy.Copy, emphasized: Bool) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = copy.title
         content.body = copy.body
@@ -88,12 +88,15 @@ final class NotificationScheduler {
         content.categoryIdentifier = NotificationIDs.category(rhythmID)
         content.threadIdentifier = rhythmID.uuidString
         content.userInfo = ["rhythmID": rhythmID.uuidString]
-        content.interruptionLevel = timeSensitive ? .timeSensitive : .active
+        // Free Apple IDs can't sign the Time Sensitive entitlement, so everything is `.active`.
+        // Follow-ups and snoozes instead rank first in notification summaries and stacks.
+        content.interruptionLevel = .active
+        content.relevanceScore = emphasized ? 1.0 : 0.5
         return content
     }
 
     private func request(for nudge: PlannedNudge) -> UNNotificationRequest {
-        let content = self.content(nudge.rhythmID, (nudge.title, nudge.body), timeSensitive: nudge.timeSensitive)
+        let content = self.content(nudge.rhythmID, (nudge.title, nudge.body), emphasized: nudge.emphasized)
         let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: nudge.date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
         return UNNotificationRequest(identifier: nudge.id, content: content, trigger: trigger)
@@ -107,6 +110,6 @@ final class NotificationScheduler {
         region.notifyOnEntry = true
         region.notifyOnExit = false
         let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
-        return UNNotificationRequest(identifier: id, content: content(r.id, copy, timeSensitive: true), trigger: trigger)
+        return UNNotificationRequest(identifier: id, content: content(r.id, copy, emphasized: true), trigger: trigger)
     }
 }

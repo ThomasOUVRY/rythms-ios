@@ -43,7 +43,7 @@ enum NudgeStyle: String, Codable, CaseIterable, Identifiable {
     var help: String {
         switch self {
         case .quiet: "A single notification. Good for things you rarely forget."
-        case .followUp: "If you haven't tapped it within an hour, one time-sensitive reminder. Then it stops."
+        case .followUp: "If you haven't tapped it within an hour, one more reminder. Then it stops."
         case .live: "A countdown stays on your Lock Screen while it's due, plus the nudge and follow-up."
         }
     }

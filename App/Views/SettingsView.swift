@@ -17,6 +17,19 @@ struct SettingsView: View {
                     notificationsBanner
                 }
 
+                section("Let nudges reach you") {
+                    // Without the paid Time Sensitive entitlement, Focus modes and Scheduled Summary hold nudges back.
+                    VStack(alignment: .leading, spacing: 8) {
+                        rowText("Allow Rhythms in your Focus modes", "Settings → Focus → each Focus you use → Apps → Add → Rhythms.")
+                        rowText("Keep it out of Scheduled Summary", "Settings → Notifications → Scheduled Summary → leave Rhythms off.")
+                        Button("Open iPhone Settings") {
+                            if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+                        }
+                        .buttonStyle(PillButtonStyle(filled: false))
+                    }
+                    .padding(.vertical, 12)
+                }
+
                 section("Rough day") {
                     Toggle(isOn: Binding(
                         get: { settings.isPaused(at: .now) },

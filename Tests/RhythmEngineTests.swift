@@ -90,7 +90,7 @@ final class RhythmEngineTests: XCTestCase {
         var settings = ReminderSettings()
         settings.quietStartMinutes = 22 * 60
         settings.quietEndMinutes = 8 * 60
-        let late = PlannedNudge(id: "x", rhythmID: UUID(), date: date(25, 23, 30), title: "", body: "", kind: .nudge, timeSensitive: false)
+        let late = PlannedNudge(id: "x", rhythmID: UUID(), date: date(25, 23, 30), title: "", body: "", kind: .nudge, emphasized: false)
         let moved = ReminderPlanner.adjust(late, settings: settings, calendar: calendar)
         XCTAssertEqual(moved?.date, date(26, 8))
     }
@@ -99,8 +99,8 @@ final class RhythmEngineTests: XCTestCase {
         var settings = ReminderSettings()
         settings.quietHoursOn = false
         settings.pausedUntil = date(26, 8)
-        let nudge = PlannedNudge(id: "a", rhythmID: UUID(), date: date(25, 18), title: "", body: "", kind: .nudge, timeSensitive: false)
-        let reset = PlannedNudge(id: "b", rhythmID: UUID(), date: date(25, 18), title: "", body: "", kind: .reset, timeSensitive: false)
+        let nudge = PlannedNudge(id: "a", rhythmID: UUID(), date: date(25, 18), title: "", body: "", kind: .nudge, emphasized: false)
+        let reset = PlannedNudge(id: "b", rhythmID: UUID(), date: date(25, 18), title: "", body: "", kind: .reset, emphasized: false)
         XCTAssertNil(ReminderPlanner.adjust(nudge, settings: settings, calendar: calendar))
         XCTAssertNotNil(ReminderPlanner.adjust(reset, settings: settings, calendar: calendar))
     }
@@ -112,7 +112,7 @@ final class RhythmEngineTests: XCTestCase {
         let plan = ReminderPlanner.plan(for: r, now: date(25, 8), settings: settings, calendar: calendar)
         XCTAssertEqual(plan.map(\.kind), [.nudge, .followUp])
         XCTAssertEqual(plan.first?.date, date(25, 15, 40))
-        XCTAssertEqual(plan.last?.timeSensitive, true)
+        XCTAssertEqual(plan.last?.emphasized, true)
     }
 
     func testPeriodPlanUsesCheckpointsAndSkipsWhenDone() {
