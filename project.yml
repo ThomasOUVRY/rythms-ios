@@ -1,0 +1,95 @@
+# XcodeGen spec — run `xcodegen generate` on a Mac to create Rhythms.xcodeproj.
+# Change BUNDLE_ID_PREFIX, APP_GROUP and DEVELOPMENT_TEAM to your own before running on a device.
+name: Rhythms
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    BUNDLE_ID_PREFIX: com.example.rhythms
+    APP_GROUP: group.com.example.rhythms
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  Rhythms:
+    type: application
+    platform: iOS
+    sources:
+      - App
+      - Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Rhythms
+        RhythmsAppGroup: $(APP_GROUP)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSSupportsLiveActivities: true
+        NSLocationWhenInUseUsageDescription: Rhythms uses your home location only to nudge you when you get home.
+    entitlements:
+      path: App/Rhythms.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(APP_GROUP)
+        com.apple.developer.usernotifications.time-sensitive: true
+    dependencies:
+      - target: RhythmsWidgets
+
+  RhythmsWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Widgets
+      - Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).widgets
+    info:
+      path: Widgets/Info.plist
+      properties:
+        CFBundleDisplayName: Rhythms
+        RhythmsAppGroup: $(APP_GROUP)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widgets/RhythmsWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(APP_GROUP)
+
+  RhythmsTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).tests
+    dependencies:
+      - target: Rhythms
+
+schemes:
+  Rhythms:
+    build:
+      targets:
+        Rhythms: all
+        RhythmsWidgets: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - RhythmsTests
